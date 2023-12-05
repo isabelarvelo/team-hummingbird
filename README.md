@@ -58,7 +58,7 @@ Even beyond the capacity to label every line, we may want to know some things ab
 * The model should return an answer
 * You should demonstrate (and keep this in your Jupyter notebook in an organized way) providing the data to the model as well as a question about the data and comment on how well this functionality works. In other words, provide some examples of the functionality and comment on the behavior.
 
-### In-the-loop AI-Assisted Labeling (60 points)
+### In-the-loop AI-Assisted Labeling (50 points)
 Even further beyond the capacity for AI-Assisted labeling, we can also ask the model to help us as we try to label the dataset manually. In other words, we can "train" a model as we go along with labeling, and use this feedback for better predictions.
 In this notebook, you will develop and demonstrate the following functionality based on a CSV file using one of these APIs:
 * Create functionality that returns a variable number of lines from the transcript (probably consecutive) with their labels
