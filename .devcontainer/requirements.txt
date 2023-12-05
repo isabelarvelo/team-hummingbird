@@ -1,0 +1,12 @@
+gradio
+pandas
+seaborn
+matplotlib
+openpyxl
+numpy
+plotly
+plotly_express
+streamlit-option-menu
+altair==4.0
+nbdev
+openai

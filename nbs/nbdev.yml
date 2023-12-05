@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "ai-assisted-coding-final"
+  site-url: "https://dsi-principles-prog-F2023.github.io/ai-assisted-coding-final"
+  description: "reteach packages"
+  repo-branch: main
+  repo-url: "https://github.com/dsi-principles-prog-F2023/ai-assisted-coding-final"
