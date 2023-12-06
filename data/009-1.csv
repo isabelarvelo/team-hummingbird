@@ -1,59 +1,59 @@
-Timestamp,Text,Label
-0:00:00,"Good morning class, today we are going to learn about nouns.",PRS
-0:00:04.847265,"A noun is a word that represents a person, place, thing, or idea.",NA
-0:00:09.220960,Can anyone give me an example of a noun?,OTR
-0:00:14.115834,"That's right, 'dog' is a noun because it is a thing.",NA
-0:00:18.549212,Let's write down some nouns in our notebooks.,NA
-NA,"Now, let's talk about verbs. Does anyone know what a verb is?",NA
-NA,"A verb is a word that describes an action, occurrence, or state of being.",NA
-0:00:23.013970,Can someone give me an example of a verb?,OTR
-NA,"Great example, 'run' is a verb because it is an action.",PRS
-NA,"Now, let's write down some verbs in our notebooks.",NA
-NA,"Next, we are going to learn about adjectives.",NA
-0:00:27.186775,An adjective is a word that describes a noun.,NA
-0:00:31.558534,Can someone give me an example of an adjective?,OTR
-NA,"Exactly, 'beautiful' is an adjective because it describes a noun.",NA
-0:00:35.841980,Let's write down some adjectives in our notebooks.,NA
-0:00:40.398608,"Now we are going to form sentences using nouns, verbs, and adjectives.",NA
-NA,A sentence is a group of words that expresses a complete thought.,NA
-NA,Let's build a sentence together. I'll start with a noun: 'The cat'.,NA
-0:00:44.802196,Can someone add a verb to our sentence?,OTR
-NA,"Great, now our sentence is: 'The cat runs'.",PRS
-0:00:49.434353,Can someone add an adjective to our sentence?,OTR
-0:00:54.210090,"Wonderful, our sentence is now: 'The fast cat runs'.",PRS
-0:00:58.450456,Let's write down some of our own sentences in our notebooks.,NA
-NA,Now we are going to learn about punctuation.,NA
-NA,Punctuation marks are symbols that help us to organize and structure sentences.,NA
-0:01:03.244528,The period is a punctuation mark used to end a sentence.,NA
-NA,The question mark is used at the end of a question.,NA
-0:01:08.036927,The exclamation mark is used to express excitement or emphasis.,NA
-NA,Can someone give me a sentence with an exclamation mark?,OTR
-0:01:12.865156,"Great job, that sentence definitely needed an exclamation mark!",PRS
-NA,Let's write down some sentences with different punctuation marks in our notebooks.,NA
-0:01:17.103391,"Next, we are going to learn about pronouns.",NA
-NA,A pronoun is a word that can take the place of a noun.,NA
-NA,Can someone give me an example of a pronoun?,OTR
-NA,"That's right, 'he' is a pronoun because it can take the place of a noun.",NA
-NA,Let's write down some pronouns in our notebooks.,NA
-NA,"Now, we are going to practice using pronouns in sentences.",NA
-NA,Let's build a sentence together. I'll start with a noun: 'The girl'.,NA
-NA,Can someone replace the noun with a pronoun?,OTR
-NA,"Great, now our sentence is: 'She reads a book'.",PRS
-NA,Let's write down some of our own sentences using pronouns in our notebooks.,NA
-0:01:21.547432,"Next, we are going to learn about adverbs.",NA
-NA,"An adverb is a word that describes a verb, an adjective, or another adverb.",NA
-0:01:25.740881,Can someone give me an example of an adverb?,OTR
-0:01:30.287380,"Exactly, 'quickly' is an adverb because it describes how an action is done.",NA
-NA,Let's write down some adverbs in our notebooks.,NA
-NA,Now we are going to use adverbs in sentences.,NA
-0:01:34.568614,Let's build a sentence together. I'll start with a verb: 'runs'.,NA
-NA,Can someone add an adverb to our sentence?,OTR
-0:01:39.184461,"Great, now our sentence is: 'She runs quickly'.",PRS
-NA,Let's write down some of our own sentences using adverbs in our notebooks.,NA
-NA,"Well done, everyone! You have learned a lot today.",PRS
-0:01:43.534288,Remember to practice using these new words in your writing.,NA
-NA,"For homework, please write a short story using the words we learned today.",NA
-NA,"Make sure to include nouns, verbs, adjectives, and adverbs in your story.",NA
-NA,Don't forget to use correct punctuation in your sentences.,NA
-NA,I am looking forward to reading your stories.,PRS
-0:01:47.997402,"Have a great day, and remember to keep practicing your English!",NA
+Text,Label
+"Good morning class, today we are going to learn about nouns.",PRS
+"A noun is a word that represents a person, place, thing, or idea.",NA
+Can anyone give me an example of a noun?,OTR
+"That's right, 'dog' is a noun because it is a thing.",NA
+Let's write down some nouns in our notebooks.,NA
+"Now, let's talk about verbs. Does anyone know what a verb is?",NA
+"A verb is a word that describes an action, occurrence, or state of being.",NA
+Can someone give me an example of a verb?,OTR
+"Great example, 'run' is a verb because it is an action.",PRS
+"Now, let's write down some verbs in our notebooks.",NA
+"Next, we are going to learn about adjectives.",NA
+An adjective is a word that describes a noun.,NA
+Can someone give me an example of an adjective?,OTR
+"Exactly, 'beautiful' is an adjective because it describes a noun.",NA
+Let's write down some adjectives in our notebooks.,NA
+"Now we are going to form sentences using nouns, verbs, and adjectives.",NA
+A sentence is a group of words that expresses a complete thought.,NA
+Let's build a sentence together. I'll start with a noun: 'The cat'.,NA
+Can someone add a verb to our sentence?,OTR
+"Great, now our sentence is: 'The cat runs'.",PRS
+Can someone add an adjective to our sentence?,OTR
+"Wonderful, our sentence is now: 'The fast cat runs'.",PRS
+Let's write down some of our own sentences in our notebooks.,NA
+Now we are going to learn about punctuation.,NA
+Punctuation marks are symbols that help us to organize and structure sentences.,NA
+The period is a punctuation mark used to end a sentence.,NA
+The question mark is used at the end of a question.,NA
+The exclamation mark is used to express excitement or emphasis.,NA
+Can someone give me a sentence with an exclamation mark?,OTR
+"Great job, that sentence definitely needed an exclamation mark!",PRS
+Let's write down some sentences with different punctuation marks in our notebooks.,NA
+"Next, we are going to learn about pronouns.",NA
+A pronoun is a word that can take the place of a noun.,NA
+Can someone give me an example of a pronoun?,OTR
+"That's right, 'he' is a pronoun because it can take the place of a noun.",NA
+Let's write down some pronouns in our notebooks.,NA
+"Now, we are going to practice using pronouns in sentences.",NA
+Let's build a sentence together. I'll start with a noun: 'The girl'.,NA
+Can someone replace the noun with a pronoun?,OTR
+"Great, now our sentence is: 'She reads a book'.",PRS
+Let's write down some of our own sentences using pronouns in our notebooks.,NA
+"Next, we are going to learn about adverbs.",NA
+"An adverb is a word that describes a verb, an adjective, or another adverb.",NA
+Can someone give me an example of an adverb?,OTR
+"Exactly, 'quickly' is an adverb because it describes how an action is done.",NA
+Let's write down some adverbs in our notebooks.,NA
+Now we are going to use adverbs in sentences.,NA
+Let's build a sentence together. I'll start with a verb: 'runs'.,NA
+Can someone add an adverb to our sentence?,OTR
+"Great, now our sentence is: 'She runs quickly'.",PRS
+Let's write down some of our own sentences using adverbs in our notebooks.,NA
+"Well done, everyone! You have learned a lot today.",PRS
+Remember to practice using these new words in your writing.,NA
+"For homework, please write a short story using the words we learned today.",NA
+"Make sure to include nouns, verbs, adjectives, and adverbs in your story.",NA
+Don't forget to use correct punctuation in your sentences.,NA
+I am looking forward to reading your stories.,PRS
+"Have a great day, and remember to keep practicing your English!",NA
