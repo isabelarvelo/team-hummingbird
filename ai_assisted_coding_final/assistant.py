@@ -14,14 +14,22 @@ class OpenAIAssistantManager:
         with open(file_path, "rb") as file_data:
             return self.client.files.create(file=file_data, purpose=purpose)
 
-    def create_assistant(self, name, description, model, tools, file_id):
+    def create_assistant(self, name, description, instructions, model, tools, file_id):
         self.current_assistant = self.client.beta.assistants.create(
             name=name,
             description=description,
+            instructions=instructions,
             model=model,
             tools=tools,
             file_ids=[file_id]
         )
+        print(self.current_assistant.id)
+        return self.current_assistant
+    
+    # add retreive assistant function
+
+    def retrieve_assistant(self, assistant_id):
+        self.current_assistant = self.client.beta.assistants.retrieve(assistant_id)
         return self.current_assistant
 
     def create_thread(self, user_message, file_id):
@@ -35,7 +43,34 @@ class OpenAIAssistantManager:
             ]
         )
         return self.current_thread
+    
+    
+    def send_message(self, message_content):
+        if self.current_thread is None:
+            raise Exception("No active thread. Create a thread first.")
+        return self.client.beta.threads.update(
+            thread_id=self.current_thread.id,
+            updates=[
+                {
+                    "role": "user",
+                    "content": message_content
+                }
+            ]
+        )
+    
+    def list_messages(self):
+        if self.current_thread is None:
+            raise Exception("No active thread. Create a thread first.")
+        thread_messages = self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
+        return thread_messages
 
+    def retrieve_message(self, message_content):
+        if self.current_thread is None:
+            raise Exception("No active thread. Create a thread first.")
+        return self.client.beta.threads.messages.retrieve('message_id', thread_id=self.current_thread.id)
+
+
+    
     def run_assistant(self, model=None, instructions=None, tools=None):
         from time import sleep
 
@@ -71,18 +106,4 @@ class OpenAIAssistantManager:
             sleep(5)
 
         return self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
-
-
-    def send_message(self, message_content):
-        if self.current_thread is None:
-            raise Exception("No active thread. Create a thread first.")
-        return self.client.beta.threads.update(
-            thread_id=self.current_thread.id,
-            updates=[
-                {
-                    "role": "user",
-                    "content": message_content
-                }
-            ]
-        )
 
