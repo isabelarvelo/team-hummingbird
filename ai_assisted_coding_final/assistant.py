@@ -37,6 +37,8 @@ class OpenAIAssistantManager:
         return self.current_thread
 
     def run_assistant(self, model=None, instructions=None, tools=None):
+        from time import sleep
+
         if self.current_thread is None or self.current_assistant is None:
             raise Exception("Assistant and Thread must be initialized before running.")
 
@@ -55,20 +57,21 @@ class OpenAIAssistantManager:
 
         run = self.client.beta.threads.runs.create(**run_parameters)
 
-        run = client.beta.threads.runs.retrieve(thread_id=self.current_thread.id, run_id=run.id)
+        run = self.client.beta.threads.runs.retrieve(thread_id=self.current_thread.id, run_id=run.id)
 
-        print(client.beta.threads.messages.list(thread_id=self.current_thread.id))
+        print(self.client.beta.threads.messages.list(thread_id=self.current_thread.id))
         
         print(run)
         counter = 0
         while run.status != "completed":
-            run = client.beta.threads.runs.retrieve(thread_id=self.current_thread.id, run_id=run.id)
+            run = self.client.beta.threads.runs.retrieve(thread_id=self.current_thread.id, run_id=run.id)
             if counter % 10 == 0:
                 print(f"\t\t{run}")
             counter += 1
             sleep(5)
 
-        return client.beta.threads.messages.list(thread_id=self.current_thread.id)
+        return self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
+
 
     def send_message(self, message_content):
         if self.current_thread is None:
