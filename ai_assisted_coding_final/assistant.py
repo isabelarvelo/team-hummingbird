@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['OpenAIAssistantManager']
 
-# %% ../nbs/00_assistants.ipynb 5
+# %% ../nbs/00_assistants.ipynb 4
 class OpenAIAssistantManager:
     def __init__(self, client):
         self.client = client
