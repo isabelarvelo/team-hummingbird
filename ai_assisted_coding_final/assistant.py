@@ -14,17 +14,23 @@ class OpenAIAssistantManager:
         with open(file_path, "rb") as file_data:
             return self.client.files.create(file=file_data, purpose=purpose)
 
-    def create_assistant(self, name, description, instructions, model, tools, file_id):
-        self.current_assistant = self.client.beta.assistants.create(
-            name=name,
-            description=description,
-            instructions=instructions,
-            model=model,
-            tools=tools,
-            file_ids=[file_id]
-        )
+    def create_assistant(self, name, description, instructions, model, tools, file_id=None):
+        assistant_kwargs = {
+            "name": name,
+            "description": description,
+            "instructions": instructions,
+            "model": model,
+            "tools": tools
+        }
+
+        if file_id:
+        # Ensure file_id is a list of strings
+            assistant_kwargs["file_ids"] = [file_id] if isinstance(file_id, str) else file_id
+
+        self.current_assistant = self.client.beta.assistants.create(**assistant_kwargs)
         print(self.current_assistant.id)
         return self.current_assistant
+
     
     # add retreive assistant function
 
@@ -32,30 +38,30 @@ class OpenAIAssistantManager:
         self.current_assistant = self.client.beta.assistants.retrieve(assistant_id)
         return self.current_assistant
 
-    def create_thread(self, user_message, file_id):
-        self.current_thread = self.client.beta.threads.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": user_message,
-                    "file_ids": [file_id]
-                }
-            ]
-        )
+    def create_thread(self, user_message, file_id=None):
+        message = {
+            "role": "user",
+            "content": user_message
+        }
+
+        if file_id:
+            message["file_ids"] = [file_id]
+
+        self.current_thread = self.client.beta.threads.create(messages=[message])
         return self.current_thread
     
+    def delete_thread(self, user_message, file_id=None):
+        self.client.beta.threads.delete(thread_id=self.current_thread.id)
+        return self.current_thread
+
     
     def send_message(self, message_content):
         if self.current_thread is None:
             raise Exception("No active thread. Create a thread first.")
-        return self.client.beta.threads.update(
+        return self.client.beta.threads.messages.create(
             thread_id=self.current_thread.id,
-            updates=[
-                {
-                    "role": "user",
-                    "content": message_content
-                }
-            ]
+            role = "user",
+            content = message_content
         )
     
     def list_messages(self):
