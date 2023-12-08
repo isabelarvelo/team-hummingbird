@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['OpenAIAssistantManager']
 
-# %% ../nbs/00_assistants.ipynb 4
+# %% ../nbs/00_assistants.ipynb 6
 class OpenAIAssistantManager:
     def __init__(self, client):
         self.client = client
@@ -14,22 +14,38 @@ class OpenAIAssistantManager:
         with open(file_path, "rb") as file_data:
             return self.client.files.create(file=file_data, purpose=purpose)
 
-    def create_assistant(self, name, description, instructions, model, tools, file_id=None):
+    def create_assistant(self, name="Classify Teacher Utterances",
+                            description="A tool for classifying teacher utterances into categories like OTR, PRS, REP, NEU.",
+                            instructions="""You are the co-founder of an ed-tech startup training an automated teacher feedback tool to classify utterances made. I am going to provide several sentences. 
+                                            Please classify each sentence as one of the following: OTR (opportunity to respond), PRS (praise), REP (reprimand), or NEU (neutral)
+        
+                                            user: Can someone give me an example of a pronoun?
+                                            assistant: OTR
+                                            user: That's right, 'he' is a pronoun because it can take the place of a noun.
+                                            assistant: PRS
+                                            user: "You need to keep quiet while someone else is reading."
+                                            assistant: REP
+                                            user: A pronoun is a word that can take the place of a noun.
+                                            assistant: NEU
+
+                                            Only answer with the following labels: OTR, PRS, REP, NEU""",
+                            model="gpt-4-1106-preview",
+                            tools=None, file_id=None):
         assistant_kwargs = {
-            "name": name,
-            "description": description,
-            "instructions": instructions,
-            "model": model,
-            "tools": tools
-        }
+                "name": name,
+                "description": description,
+                "instructions": instructions,
+                "model": model,
+                "tools": tools if tools else []
+            }
 
         if file_id:
-        # Ensure file_id is a list of strings
             assistant_kwargs["file_ids"] = [file_id] if isinstance(file_id, str) else file_id
 
         self.current_assistant = self.client.beta.assistants.create(**assistant_kwargs)
         print(self.current_assistant.id)
         return self.current_assistant
+
 
     
     # add retreive assistant function
@@ -75,41 +91,47 @@ class OpenAIAssistantManager:
             raise Exception("No active thread. Create a thread first.")
         return self.client.beta.threads.messages.retrieve('message_id', thread_id=self.current_thread.id)
 
+    def get_response(self):
+        if self.current_thread is None:
+            raise Exception("No active thread. Create a thread first.")
+        return self.client.beta.threads.messages.list(thread_id=self.current_thread.id, order="asc")
 
+
+    def create_thread_and_run(self, user_input):
+        # Create a new thread for each input
+        self.current_thread = self.client.beta.threads.create()
+
+        # Submit the message and wait for the run to complete
+        run = self.submit_message(user_input)
+        completed_run = self.wait_on_run(run)
+
+        return self.current_thread, completed_run
     
-    def run_assistant(self, model=None, instructions=None, tools=None):
-        from time import sleep
+    def wait_on_run(self, run):
+        import time
 
+        while run.status == "queued" or run.status == "in_progress":
+            run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.current_thread.id,
+                run_id=run.id,
+            )
+            time.sleep(0.5)
+        return run
+    
+    def submit_message(self, user_message):
         if self.current_thread is None or self.current_assistant is None:
-            raise Exception("Assistant and Thread must be initialized before running.")
-
-        run_parameters = {
-            "thread_id": self.current_thread.id,
-            "assistant_id": self.current_assistant.id
-        }
-
-        # Adding optional parameters if they are provided
-        if model is not None:
-            run_parameters["model"] = model
-        if instructions is not None:
-            run_parameters["instructions"] = instructions
-        if tools is not None:
-            run_parameters["tools"] = tools
-
-        run = self.client.beta.threads.runs.create(**run_parameters)
-
-        run = self.client.beta.threads.runs.retrieve(thread_id=self.current_thread.id, run_id=run.id)
-
-        print(self.client.beta.threads.messages.list(thread_id=self.current_thread.id))
+            raise Exception("Assistant and Thread must be initialized before submitting a message.")
         
-        print(run)
-        counter = 0
-        while run.status != "completed":
-            run = self.client.beta.threads.runs.retrieve(thread_id=self.current_thread.id, run_id=run.id)
-            if counter % 10 == 0:
-                print(f"\t\t{run}")
-            counter += 1
-            sleep(5)
+        self.client.beta.threads.messages.create(
+            thread_id=self.current_thread.id, 
+            role="user", 
+            content=user_message
+        )
+        run = self.client.beta.threads.runs.create(
+            thread_id=self.current_thread.id,
+            assistant_id=self.current_assistant.id,
+        )
 
-        return self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
+        # Wait for the run to complete before returning
+        return self.wait_on_run(run)
 
