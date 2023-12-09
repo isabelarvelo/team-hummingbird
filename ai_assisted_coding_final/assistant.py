@@ -46,7 +46,28 @@ class OpenAIAssistantManager:
         print(self.current_assistant.id)
         return self.current_assistant
 
+    def create_custom_assistant(self, name="Custom Teacher Utterances Classifier",
+                                description="A custom tool for classifying teacher utterances using gpt-3.5-turbo.",
+                                instructions="""You are the co-founder of an ed-tech startup training an automated teacher feedback tool to classify utterances made. I am going to provide several sentences. 
+                                            Please classify each sentence as one of the following: OTR (opportunity to respond), PRS (praise), REP (reprimand), or NEU (neutral)
+                                            Only answer with the following labels: OTR, PRS, REP, NEU""",
+                                model="gpt-3.5-turbo",
+                                tools=[],
+                                file_id=None):
+        assistant_kwargs = {
+            "name": name,
+            "description": description,
+            "instructions": instructions,
+            "model": model,
+            "tools": tools
+        }
 
+        if file_id:
+            assistant_kwargs["file_ids"] = [file_id] if isinstance(file_id, str) else file_id
+    
+        self.current_assistant = self.client.beta.assistants.create(**assistant_kwargs)
+        print(self.current_assistant.id)
+        return self.current_assistant
     
     # add retreive assistant function
 
