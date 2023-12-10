@@ -42,6 +42,10 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     plotly \
     openai \
     nbdime \
+    transformers \
+    torch \
+    base64 \
+    io \
     nbdev
 
 # Copy requirements.txt and install Python libraries
