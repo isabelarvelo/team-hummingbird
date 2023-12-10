@@ -9,4 +9,4 @@ plotly_express
 streamlit-option-menu
 altair==4.0
 nbdev
-openai
+openai==0.28
