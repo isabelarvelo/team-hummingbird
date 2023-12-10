@@ -8,20 +8,21 @@ import pandas as pd
 import os
 import getpass
 import openai
-# from openai import OpenAI
+from openai import OpenAI
 import gradio as gr
 from io import StringIO
 
 # %% ../nbs/ask-the-dataset.ipynb 6
 def ask_gpt(question, csv_combined, api_key):
-    openai.api_key = api_key
-    
-    response = openai.ChatCompletion.create(
+    os.environ["OPENAI_API_KEY"]=api_key
+    client = OpenAI()
+    # openai.api_key = api_key
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful assistant and an expert at reading files, interpreting them and also writing python codes and visualizing data. Here is the data you need to load and process to answer questions: " + csv_combined},
             {"role": "user", "content": question}
         ])
     
-    return response.choices[0].message['content']
+    return response.choices[0].message.content
     

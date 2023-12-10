@@ -40,7 +40,7 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     streamlit_option_menu \
     nb-clean \
     plotly \
-    openai==0.28 \
+    openai \
     nbdime \
     nbdev
 
