@@ -25,6 +25,15 @@ def process_csv(uploaded_files):
     except:
         st.error("Please upload valid CSV files")
 
+# API Key Input
+if not st.session_state.api_key:
+    st.session_state.api_key = st.text_input("Enter your OpenAI API Key", type="password")
+
+# File Uploader - Always available
+uploaded_files = st.file_uploader("Upload CSV files", accept_multiple_files=True)
+if uploaded_files:
+    st.session_state.df = process_csv(uploaded_files)
+
 # Function to process user query
 def process_query(user_query):
     if st.session_state.api_key and st.session_state.df is not None and user_query:
@@ -54,15 +63,6 @@ def display_history():
             st.markdown(message["content"])
 
 display_history()
-
-# API Key Input
-if not st.session_state.api_key:
-    st.session_state.api_key = st.text_input("Enter your OpenAI API Key", type="password")
-
-# File Uploader
-if st.session_state.api_key and (st.session_state.df is None or st.session_state.df.empty):
-    uploaded_files = st.file_uploader("Upload CSV files", accept_multiple_files=True)
-    st.session_state.df = process_csv(uploaded_files)
 
 # Chat Interface
 if st.session_state.api_key and st.session_state.df is not None:
