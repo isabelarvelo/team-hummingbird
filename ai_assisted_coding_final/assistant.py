@@ -14,8 +14,8 @@ class OpenAIAssistantManager:
         with open(file_path, "rb") as file_data:
             return self.client.files.create(file=file_data, purpose=purpose)
 
-    def create_assistant(self, name="Classify Teacher Utterances",
-                            description="A tool for classifying teacher utterances into categories like OTR, PRS, REP, NEU.",
+    def create_assistant(self, name="Custom Teacher Utterances Classifier",
+                            description="A tool for classifying teacher utterances into the categories OTR (opportunity to respond), PRS (praise), REP (reprimand), or NEU (neutral).",
                             instructions="""You are the co-founder of an ed-tech startup training an automated teacher feedback tool to classify utterances made. I am going to provide several sentences. 
                                             Please classify each sentence as one of the following: OTR (opportunity to respond), PRS (praise), REP (reprimand), or NEU (neutral)
         
@@ -23,14 +23,14 @@ class OpenAIAssistantManager:
                                             assistant: OTR
                                             user: That's right, 'he' is a pronoun because it can take the place of a noun.
                                             assistant: PRS
-                                            user: "You need to keep quiet while someone else is reading."
+                                            user: You need to keep quiet while someone else is reading.
                                             assistant: REP
                                             user: A pronoun is a word that can take the place of a noun.
                                             assistant: NEU
 
                                             Only answer with the following labels: OTR, PRS, REP, NEU""",
                             model="gpt-4-1106-preview",
-                            tools=None, file_id=None):
+                            tools=[{"type": "code_interpreter"}], file_id=None):
         assistant_kwargs = {
                 "name": name,
                 "description": description,
@@ -68,8 +68,6 @@ class OpenAIAssistantManager:
         self.current_assistant = self.client.beta.assistants.create(**assistant_kwargs)
         print(self.current_assistant.id)
         return self.current_assistant
-    
-    # add retreive assistant function
 
     def retrieve_assistant(self, assistant_id):
         self.current_assistant = self.client.beta.assistants.retrieve(assistant_id)
@@ -106,17 +104,45 @@ class OpenAIAssistantManager:
             raise Exception("No active thread. Create a thread first.")
         thread_messages = self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
         return thread_messages
+    
+    # def submit_message(self, user_message):
+    #     if self.current_thread is None or self.current_assistant is None:
+    #         raise Exception("Assistant and Thread must be initialized before submitting a message.")
+        
+    #     self.client.beta.threads.messages.create(
+    #         thread_id=self.current_thread.id, 
+    #         role="user", 
+    #         content=user_message
+    #     )
+    #     run = self.client.beta.threads.runs.create(
+    #         thread_id=self.current_thread.id,
+    #         assistant_id=self.current_assistant.id,
+    #     )
 
-    def retrieve_message(self, message_content):
-        if self.current_thread is None:
-            raise Exception("No active thread. Create a thread first.")
-        return self.client.beta.threads.messages.retrieve('message_id', thread_id=self.current_thread.id)
+    #     # Wait for the run to complete before returning
+    #     return self.wait_on_run(run)
 
-    def get_response(self):
-        if self.current_thread is None:
-            raise Exception("No active thread. Create a thread first.")
-        return self.client.beta.threads.messages.list(thread_id=self.current_thread.id, order="asc")
+    def submit_message(self, user_message):
+        if self.current_thread is None or self.current_assistant is None:
+            raise Exception("Assistant and Thread must be initialized before submitting a message.")
+        
+        # Submit the user message
+        self.client.beta.threads.messages.create(
+            thread_id=self.current_thread.id, 
+            role="user", 
+            content=user_message
+        )
+        
+        # Create a run for the submitted message
+        run = self.client.beta.threads.runs.create(
+            thread_id=self.current_thread.id,
+            assistant_id=self.current_assistant.id,
+        )
 
+        # Wait for the run to complete before returning
+        completed_run = self.wait_on_run(run)
+        return completed_run
+    
 
     def create_thread_and_run(self, user_input):
         # Create a new thread for each input
@@ -139,20 +165,13 @@ class OpenAIAssistantManager:
             time.sleep(0.5)
         return run
     
-    def submit_message(self, user_message):
-        if self.current_thread is None or self.current_assistant is None:
-            raise Exception("Assistant and Thread must be initialized before submitting a message.")
-        
-        self.client.beta.threads.messages.create(
-            thread_id=self.current_thread.id, 
-            role="user", 
-            content=user_message
-        )
-        run = self.client.beta.threads.runs.create(
-            thread_id=self.current_thread.id,
-            assistant_id=self.current_assistant.id,
-        )
+    def retrieve_message(self, message_content):
+        if self.current_thread is None:
+            raise Exception("No active thread. Create a thread first.")
+        return self.client.beta.threads.messages.retrieve('message_id', thread_id=self.current_thread.id)
 
-        # Wait for the run to complete before returning
-        return self.wait_on_run(run)
+    def get_response(self):
+        if self.current_thread is None:
+            raise Exception("No active thread. Create a thread first.")
+        return self.client.beta.threads.messages.list(thread_id=self.current_thread.id, order="asc")
 

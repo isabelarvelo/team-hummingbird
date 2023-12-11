@@ -21,17 +21,17 @@ client = OpenAI()
 assistant_manager = assistant.OpenAIAssistantManager(client)
 
 
-def get_predictions_with_context(context, new_data, assistant_manager):
-    predictions = []
-    for data in new_data:
-        prompt = context + f"\n\n{data}"
-        thread, completed_run = assistant_manager.create_thread_and_run(prompt)
-        response_page = assistant_manager.get_response()
-        messages = [msg for msg in response_page]
-        if messages:
-            prediction = messages[-1]['content']['text']['value']
-            predictions.append(prediction)
-    return predictions
+# def get_predictions_with_context(context, new_data, assistant_manager):
+#     predictions = []
+#     for data in new_data:
+#         prompt = context + f"\n\n{data}"
+#         thread, completed_run = assistant_manager.create_thread_and_run(prompt)
+#         response_page = assistant_manager.get_response()
+#         messages = [msg for msg in response_page]
+#         if messages:
+#             prediction = messages[-1]['content']['text']['value']
+#             predictions.append(prediction)
+#     return predictions
 
 # def display_sentences_for_labeling(sentences, labels=None):
 #     user_labels = []
@@ -84,11 +84,20 @@ def main():
         st.session_state.setdefault('data', data)
         st.session_state.setdefault('context', [])
         st.session_state.setdefault('index', 0)
+    
+    # if uploaded_file is not None:
+    #     data = load_data(uploaded_file)
+    #     st.session_state.setdefault('data', data)
+    #     st.session_state.setdefault('labeled_data', [])
+    #     st.session_state.setdefault('index', 0)
+    #     st.session_state.setdefault('accuracy_scores', [])
 
         if st.session_state['index'] < len(st.session_state['data']):
             current_data = st.session_state['data'].iloc[st.session_state['index']]
             text = current_data['Text']
             st.markdown("<h3 style='font-weight: bold;'>Sentence to Label:</h3>", unsafe_allow_html=True)
+
+
 
 
             # label for box containing the sentence
@@ -106,7 +115,13 @@ def main():
                 if cols[i].button(f"{option}", key=unique_key):
                     st.session_state['context'].append((text, option))
                     st.session_state['index'] += 1
-                    #labeled = True
+                    labeled = True
+            
+            # for i, option in enumerate(label_options):
+            #     unique_key = f"label_button_{st.session_state.index}_{option}"
+            #     if cols[i].button(f"{option}", key=unique_key):
+            #         st.session_state['labeled_data'].append((text, option))
+            #         st.session_state['index'] += 1
 
 
         # Display and edit labeled sentences
@@ -128,6 +143,9 @@ def main():
         # progress_bar = st.progress(0)
         # for i in range(100):
         #     progress_bar.progress(i + 1)
+
+        # if st.session_state['labeled_data']:
+        #     st.line_chart(st.session_state['accuracy_scores'])
 
         if st.button("Save Data"):
             st.session_state['data'].to_csv("labeled_data.csv")
