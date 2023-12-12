@@ -27,7 +27,8 @@ def process_lines(lines, assistant_manager, context = ""):
 
     assistant_message = messages[-1].content[0].text.value
 
-    labels = assistant_message.split("\n")
+    labels = assistant_message.replace('\n', ' ').replace(',', ' ').split()
+
     # append tupe (line, label) to data using zip
     data = list(zip(lines, labels))
     

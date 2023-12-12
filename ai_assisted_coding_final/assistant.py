@@ -44,7 +44,7 @@ class OpenAIAssistantManager:
 
         self.current_assistant = self.client.beta.assistants.create(**assistant_kwargs)
         print(self.current_assistant.id)
-        return self.current_assistant
+
 
     def create_custom_assistant(self, name="Custom Teacher Utterances Classifier",
                                 description="A custom tool for classifying teacher utterances using gpt-3.5-turbo.",
@@ -67,11 +67,11 @@ class OpenAIAssistantManager:
     
         self.current_assistant = self.client.beta.assistants.create(**assistant_kwargs)
         print(self.current_assistant.id)
-        return self.current_assistant
+        print(self.current_assistant.id)
 
     def retrieve_assistant(self, assistant_id):
         self.current_assistant = self.client.beta.assistants.retrieve(assistant_id)
-        return self.current_assistant
+        print(self.current_assistant.id)
 
     def create_thread(self, user_message, file_id=None):
         message = {
