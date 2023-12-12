@@ -105,23 +105,6 @@ class OpenAIAssistantManager:
         thread_messages = self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
         return thread_messages
     
-    # def submit_message(self, user_message):
-    #     if self.current_thread is None or self.current_assistant is None:
-    #         raise Exception("Assistant and Thread must be initialized before submitting a message.")
-        
-    #     self.client.beta.threads.messages.create(
-    #         thread_id=self.current_thread.id, 
-    #         role="user", 
-    #         content=user_message
-    #     )
-    #     run = self.client.beta.threads.runs.create(
-    #         thread_id=self.current_thread.id,
-    #         assistant_id=self.current_assistant.id,
-    #     )
-
-    #     # Wait for the run to complete before returning
-    #     return self.wait_on_run(run)
-
     def submit_message(self, user_message):
         if self.current_thread is None or self.current_assistant is None:
             raise Exception("Assistant and Thread must be initialized before submitting a message.")
