@@ -11,6 +11,7 @@ import openai
 from openai import OpenAI
 import gradio as gr
 from io import StringIO
+import sys
 
 # %% ../nbs/02_ask-the-dataset.ipynb 4
 class CSVFileManager:
@@ -64,6 +65,11 @@ class GPTQuestionsHandler:
                           "Here is the data you need to work with:\n" + data)
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo-1106",
+            temperature=1,
+            max_tokens=320,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
             messages=[
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": question}
@@ -73,21 +79,28 @@ class GPTQuestionsHandler:
 
 # %% ../nbs/02_ask-the-dataset.ipynb 5
 def main():
-    file_paths_input = input("Enter CSV file paths, separated by a comma: ")
-    file_paths = [path.strip() for path in file_paths_input.split(',')]
+    try:
+        file_paths_input = input("Enter CSV file paths, separated by a comma: ")
+        file_paths = [path.strip() for path in file_paths_input.split(',')]
+    except:
+        file_paths = ['../data/009-1.csv']
 
     data_manager = CSVFileManager()
     data_frame = data_manager.load_data(file_paths)
 
-
     api_key = getpass.getpass("Enter OpenAI API Key: ")
     ai_handler = GPTQuestionsHandler(api_key)
 
-    user_question = input("Please enter your question about the data: ")
-    answer = ai_handler.ask_gpt(user_question, data_frame.to_string(index=False))
 
-    print("Question: ", user_question,"\n")
-    print("Answer:", answer, "\n")
+    try:
+        user_question = input("Please enter your question about the data: ")
+        answer = ai_handler.ask_gpt(user_question, data_frame.to_string(index=False))
+
+        print("Question: ", user_question,"\n")
+        print("Answer:", answer, "\n")
+    except:
+        print("An error occurred. Please try again.")
+
 
 if __name__ == "__main__":
     main()
