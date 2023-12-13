@@ -10,3 +10,8 @@ streamlit-option-menu
 altair==4.0
 nbdev
 openai
+PIL
+io
+torch
+ransformers
+base64

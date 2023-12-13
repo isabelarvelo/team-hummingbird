@@ -46,6 +46,7 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     torch \
     base64 \
     io \
+    PIL \
     nbdev
 
 # Copy requirements.txt and install Python libraries
