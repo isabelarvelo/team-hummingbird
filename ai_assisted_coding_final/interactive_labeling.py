@@ -11,28 +11,35 @@ def read_csv(file_path):
     return df['Text'].tolist()
 
 # %% ../nbs/03_interactive_labeling.ipynb 7
-def process_lines(lines, assistant_manager, context = ""):
+def process_lines(lines, assistant_manager, context=""):
     data = []
-    additional_context = "Return a list of labels for each utterance separated by \n"
+    additional_context = "Return a list of labels for each utterance. Each utterance is separated by \n"
     context += additional_context
     assistant_manager.create_thread(context)
 
     all_lines = "\n ".join(lines)
 
-    completed_run = assistant_manager.submit_message(all_lines)
+    try:
+        completed_run = assistant_manager.submit_message(all_lines)
+        response_page = assistant_manager.get_response()
+        messages = [msg for msg in response_page] 
+        assistant_message = messages[-1].content[0].text.value
+        labels = assistant_message.replace('\n', ' ').replace(',', ' ').split()
 
-    response_page = assistant_manager.get_response()
+        # Check if labels are one of the specified labels
+        valid_labels = ["NEU", "OTR", "PRS", "REP"]
+        labels = [label if label in valid_labels else "NEU" for label in labels]
 
-    messages = [msg for msg in response_page] 
+    except Exception as e:
+        # Handle any exception that occurred during API call
+        print(f"An error occurred: {e}")
+        # Default to "NEU" for all lines in case of an error
+        labels = ["NEU"] * len(lines)
 
-    assistant_message = messages[-1].content[0].text.value
-
-    labels = assistant_message.replace('\n', ' ').replace(',', ' ').split()
-
-    # append tupe (line, label) to data using zip
+    # append tuple (line, label) to data using zip
     data = list(zip(lines, labels))
-    
-    return(data) 
+
+    return(data)
 
 # %% ../nbs/03_interactive_labeling.ipynb 8
 def label_data(unlabeled_text):
@@ -98,4 +105,4 @@ def get_user_labels(batch, assistant_manager, context):
 
 # %% ../nbs/03_interactive_labeling.ipynb 13
 def calculate_accuracy(correct_responses, batch_size):
-    return correct_responses / batch_size
+    return correct_responses / batch_size if batch_size > 0 else 0
