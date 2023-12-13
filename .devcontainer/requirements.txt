@@ -14,8 +14,4 @@ PIL
 io
 torch
 ransformers
-<<<<<<< HEAD
 base64
-=======
-base64
->>>>>>> 1b7285fd81acd28fd6e591b062e00894691591d6
