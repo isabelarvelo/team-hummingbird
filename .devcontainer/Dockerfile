@@ -19,6 +19,7 @@ RUN apt-get -y update && apt-get install -y bash \
     npm && \
     rm -rf /var/lib/apt/lists/*
 
+
 # Install python packages
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir \
