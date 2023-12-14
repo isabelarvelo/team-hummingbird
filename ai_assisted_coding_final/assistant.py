@@ -88,11 +88,17 @@ class OpenAIAssistantManager:
 
     
     def delete_thread(self, user_message, file_id=None):
+        """ 
+        Deletes the current thread.
+        """
         self.client.beta.threads.delete(thread_id=self.current_thread.id)
         return self.current_thread
 
     
     def send_message(self, message_content):
+        """ 
+        Sends a message to the current thread.
+        """
         if self.current_thread is None:
             raise Exception("No active thread. Create a thread first.")
         return self.client.beta.threads.messages.create(
@@ -102,6 +108,9 @@ class OpenAIAssistantManager:
         )
     
     def list_messages(self):
+        """ 
+        Lists all messages in the current thread.
+        """
         if self.current_thread is None:
             raise Exception("No active thread. Create a thread first.")
         thread_messages = self.client.beta.threads.messages.list(thread_id=self.current_thread.id)
@@ -132,6 +141,9 @@ class OpenAIAssistantManager:
     
 
     def create_thread_and_run(self, user_input):
+        """ 
+        Creates a thread and runs the user input.
+        """
         # Create a new thread for each input
         self.current_thread = self.client.beta.threads.create()
 
