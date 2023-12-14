@@ -48,7 +48,8 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     torch \
     ipython \
     Pillow \
-    nbdev
+    nbdev \
+    openpyxl
 
 
 # Copy requirements.txt and install Python libraries
