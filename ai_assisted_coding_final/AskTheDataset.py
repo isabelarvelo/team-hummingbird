@@ -16,8 +16,7 @@ import sys
 # %% ../nbs/02_ask-the-dataset.ipynb 5
 class CSVFileManager:
     """This class is responsible for handling CSV file operations. 
-    It can read one or more CSV files, either from file paths or file-like objects, and concatenate them into a
-    single pandas DataFrame.
+    It can read one or more CSV files, either from file paths or file-like objects, and concatenate them into a single pandas DataFrame.
     """
     def __init__(self):
         self.data_frame = None
