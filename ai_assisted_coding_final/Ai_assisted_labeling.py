@@ -15,7 +15,8 @@ from openpyxl.styles import PatternFill
 class ClassroomAnalysis:
     def __init__(self):
         pass
-
+    
+    # We manually apply override rules in the giving classroom setting for better label accurancy
     def apply_rule_based_override(self, text):
         """
         Applies override rules to improve the accuracy of the result based on the given classroom site.
@@ -32,6 +33,7 @@ class ClassroomAnalysis:
             return 'OTR'
         return None
 
+    # We manually set different colors to the different ranges of score
     def color_maps(self, val):
         """
         Takes a scalar and returns a string with the css property `background-color` for a specific color.
@@ -51,6 +53,7 @@ class ClassroomAnalysis:
             return 'background-color: #31a354'  # dark green
 
 # %% ../nbs/01_ai_labeling.ipynb 7
+# This function will add color withd different densities to the confifence score
 def apply_excel_color_styles(df, target_columns):
         output = BytesIO()
         writer = pd.ExcelWriter(output, engine='openpyxl')
@@ -69,6 +72,7 @@ def apply_excel_color_styles(df, target_columns):
         return output.getvalue()
 
 # %% ../nbs/01_ai_labeling.ipynb 8
+# This function enable user to get a downloading link for their labeled transcripts
 def get_table_download_link(df, target_columns):
         processed_data = apply_excel_color_styles(df, target_columns)
         b64 = base64.b64encode(processed_data).decode()
