@@ -52,29 +52,36 @@ class GPTQuestionsHandler:
         os.environ["OPENAI_API_KEY"] = api_key
         self.client = OpenAI()
 
-    def ask_gpt(self, question, data):
+    def ask_gpt(self, history, data):
         """
         Sends a question and data to the OpenAI API and retrieves the response
         Arguments: The user's question about the data
         Data is input to the model in string format
         Model returns the response from the API
         """
-
-        system_message = ("You are a helpful assistant skilled at data science and data analysis. "
+        
+        system_message = {
+            "role": "system", 
+            "content":("You are a helpful assistant skilled at data science and data analysis. "
                           "You are an expert at reading files, interpreting them and also writing python codes. "
-                          "Here is the data you need to work with:\n" + data)
+                          "Here is the data you need to work with:\n" + data)}
+        
+        # Create a copy of history to include system message for API call
+        messages_for_api = [system_message] + history
+
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo-1106",
-            temperature=1,
-            max_tokens=320,
+            temperature=0.7,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": question}
-            ])
-        return response.choices[0].message.content
+            messages=messages_for_api)
+        answer= response.choices[0].message.content
+        # Update the conversation history with the new response
+        history.append({"role": "assistant", "content": answer})
+        
+        return answer
+    
 
 
 # %% ../nbs/02_ask-the-dataset.ipynb 5
@@ -91,17 +98,30 @@ def main():
     api_key = getpass.getpass("Enter OpenAI API Key: ")
     ai_handler = GPTQuestionsHandler(api_key)
 
-
+    # Initialize the conversation history
+    history = []
     try:
-        user_question = input("Please enter your question about the data: ")
-        answer = ai_handler.ask_gpt(user_question, data_frame.to_string(index=False))
+        while True:
+            user_question = input("Please enter your question about the data: ")
+            # Update the history with the user's question
+            history.append({"role": "user", "content": user_question})
 
-        print("Question: ", user_question,"\n")
-        print("Answer:", answer, "\n")
-    except:
-        print("An error occurred. Please try again.")
+            answer = ai_handler.ask_gpt(history, data_frame.to_string(index=False))
+
+            print("Question: ", user_question,"\n")
+            print("Answer:", answer, "\n")
+            
+            # Ask the user if they want to continue or exit
+            continue_chat = input("Do you have another question? (yes/no): ")
+            if continue_chat.lower() == 'no':
+                print("Exiting the chat.")
+                break
+            
+    except Exception as e:
+        print("An error occurred. Please try again.",e)
 
 
 if __name__ == "__main__":
     main()
+
 

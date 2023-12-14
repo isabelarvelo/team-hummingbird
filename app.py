@@ -36,10 +36,15 @@ if 'ai_handler' not in st.session_state:
     st.session_state.ai_handler = None
 if 'df' not in st.session_state:  # Initialize 'df' in session state
     st.session_state.df = None
+if 'last_displayed_index' not in st.session_state:
+    st.session_state.last_displayed_index = 0
+
 
 # Function to clear chat history
 def clear_history():
     st.session_state.history = []
+    st.session_state.last_displayed_index = 0
+
 
     
 # API Key Input
@@ -58,52 +63,46 @@ if uploaded_files:
     st.session_state.df = st.session_state.data_manager.data_frame
 
 
+
+
 # Function to process user query
 def process_query(user_query):
     if st.session_state.ai_handler and st.session_state.df is not None and user_query:
         csv_combined = st.session_state.df.to_string()
-        response = st.session_state.ai_handler.ask_gpt(user_query, csv_combined)
+        # Append only the user query to the history
+        st.session_state.history.append({"role": "user", "content": user_query})
         
-        # Simulate typing for assistant response
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = ""
-            for chunk in response.split():
-                full_response += chunk + " "
-                time.sleep(0.05)
-                message_placeholder.markdown(full_response + "▌")
-            message_placeholder.markdown(full_response)
+        st.session_state.ai_handler.ask_gpt(st.session_state.history, csv_combined)
 
-        # Manage history length
-        if len(st.session_state.history) >= MAX_HISTORY_LENGTH:
-            st.session_state.history.pop(0)  # Remove the oldest message
-        st.session_state.history.append({"role": "bot", "content": response})
+        
 
-# Display chat messages from history
+        # Ensure the history is not too long
+        if len(st.session_state.history) > MAX_HISTORY_LENGTH:
+            st.session_state.history = st.session_state.history[-MAX_HISTORY_LENGTH:]
+
+        # Call display_history to show the updated conversation
+        display_history()
+
+
+ 
+            
+
+# Function to display chat messages from history
 def display_history():
-    start_index = max(0, len(st.session_state.history) - MAX_HISTORY_LENGTH)
-    for message in st.session_state.history[start_index:]:
+    for message in st.session_state.history:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-display_history()
+
+
 
 
 # Chat Interface
 if st.session_state.api_key and st.session_state.df is not None:
     user_query = st.chat_input("Ask a question about the dataset")
     if user_query:
-        # Append user's question to history and manage history length
-        if len(st.session_state.history) >= MAX_HISTORY_LENGTH:
-            st.session_state.history.pop(0)
-        st.session_state.history.append({"role": "user", "content": user_query})
-
-        # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(user_query)
-        
-        # Process and respond to query
         process_query(user_query)
+
 
 if st.button('Clear Chat History'):
     clear_history()
