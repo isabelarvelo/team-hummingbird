@@ -31,6 +31,7 @@ class OpenAIAssistantManager:
                                             Only answer with the following labels: OTR, PRS, REP, NEU""",
                             model="gpt-4-1106-preview",
                             tools=[{"type": "code_interpreter"}], file_id=None):
+
         assistant_kwargs = {
                 "name": name,
                 "description": description,
@@ -70,20 +71,21 @@ class OpenAIAssistantManager:
         print(self.current_assistant.id)
 
     def retrieve_assistant(self, assistant_id):
+        """Retrieves an existing Assistant by ID"""
         self.current_assistant = self.client.beta.assistants.retrieve(assistant_id)
         print(self.current_assistant.id)
-
+    
     def create_thread(self, user_message, file_id=None):
         message = {
             "role": "user",
             "content": user_message
         }
-
         if file_id:
             message["file_ids"] = [file_id]
 
         self.current_thread = self.client.beta.threads.create(messages=[message])
         return self.current_thread
+
     
     def delete_thread(self, user_message, file_id=None):
         self.client.beta.threads.delete(thread_id=self.current_thread.id)
@@ -106,6 +108,8 @@ class OpenAIAssistantManager:
         return thread_messages
     
     def submit_message(self, user_message):
+        """Sends a user message to the active thread.
+        Takes the message content string as input."""
         if self.current_thread is None or self.current_assistant is None:
             raise Exception("Assistant and Thread must be initialized before submitting a message.")
         
@@ -138,6 +142,7 @@ class OpenAIAssistantManager:
         return self.current_thread, completed_run
     
     def wait_on_run(self, run):
+        """Waits for a run to complete before returning."""
         import time
 
         while run.status == "queued" or run.status == "in_progress":
@@ -149,11 +154,13 @@ class OpenAIAssistantManager:
         return run
     
     def retrieve_message(self, message_content):
+        """Retrieves a message by ID"""
         if self.current_thread is None:
             raise Exception("No active thread. Create a thread first.")
         return self.client.beta.threads.messages.retrieve('message_id', thread_id=self.current_thread.id)
 
     def get_response(self):
+        """Retrieves the response from the last run."""
         if self.current_thread is None:
             raise Exception("No active thread. Create a thread first.")
         return self.client.beta.threads.messages.list(thread_id=self.current_thread.id, order="asc")
