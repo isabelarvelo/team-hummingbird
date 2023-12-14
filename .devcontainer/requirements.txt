@@ -10,3 +10,9 @@ streamlit-option-menu
 altair==4.0
 nbdev
 openai
+transformers
+torch
+ipython
+Pillow
+scikit-learn
+openpyxl
