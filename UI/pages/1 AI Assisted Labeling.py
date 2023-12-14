@@ -4,7 +4,7 @@ import pandas as pd
 from io import BytesIO
 from transformers import pipeline
 import base64
-import openpyxl
+from openpyxl import Workbook
 from openpyxl.styles import PatternFill  # Required for Pandas to_excel
 
 def color_map(val):
@@ -30,20 +30,20 @@ def color_map(val):
 def apply_excel_color_styles(df, color_map_function, target_columns):
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine='openpyxl')
-    df.to_excel(writer, index=False)
+    df.to_excel(writer, index=False, sheet_name='Sheet1')
     workbook = writer.book
     worksheet = writer.sheets['Sheet1']
-    
+
     for idx, row in df.iterrows():
-        for col_name, value in row.items():
-            # Apply coloring only to specified columns
+        for col_idx, col_name in enumerate(df.columns):
             if col_name in target_columns:
-                cell = worksheet.cell(row=idx + 2, column=df.columns.get_loc(col_name) + 1)
-                color = color_map_function(value)
+                cell = worksheet.cell(row=idx + 2, column=col_idx + 1)
+                color = color_map_function(row[col_name])
                 if color:
                     cell.fill = PatternFill(start_color=color, end_color=color, fill_type="solid")
 
     writer.save()
+    writer.close()  # Ensure the writer is properly closed
     return output.getvalue()
 
 def get_table_download_link(df, target_columns):
@@ -56,8 +56,18 @@ def get_table_download_link(df, target_columns):
 
 # Main function for the Streamlit app
 def main():
-    st.title("Classroom Transcript Labeling Tool")
-    st.write("Upload a transcript and get it labeled based on classroom interaction categories.")
+    st.title("AI-Assisted Labeling :pencil2:")
+    st.write("""
+        Welcome to the AI-Assisted Labeling page!
+
+        This tool is designed to enhance your data labeling workflow. Follow these simple steps:
+        
+        1. Upload Your Data: Use the upload button below to upload a CSV file containing your classroom transcripts. 
+        2. Review the Labels: Once uploaded, our AI model will automatically suggest labels for your data. These labels are highlighted for easy identification.
+        3. Download Labeled Data: After reviewing the AI-suggested labels, you can download the labeled file. 
+        
+        :clock1: Please wait while we process your file. This can take 30 seconds to 3 minutes based on the size of your file.
+    """)
 
     uploaded_file = st.file_uploader("Choose a file")
 
