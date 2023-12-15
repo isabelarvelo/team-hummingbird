@@ -121,7 +121,7 @@ Key features:
 - Select one or more transcript CSVs
 - Enter a text question about the data
 - Submit question and view response
-- Ask multiple independent questions and see chat history
+- Ask multiple independent or follow-up questions and see chat history
 
 ### AI-Assisted Labeling Page
 
