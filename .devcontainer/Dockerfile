@@ -3,6 +3,7 @@
 FROM ubuntu:22.04
 
 # Update the system
+# Update the system
 RUN apt-get -y update && apt-get install -y bash \
     build-essential \
     wget \
@@ -17,6 +18,7 @@ RUN apt-get -y update && apt-get install -y bash \
     nodejs \
     npm && \
     rm -rf /var/lib/apt/lists/*
+
 
 # Install python packages
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
@@ -42,7 +44,13 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     plotly \
     openai \
     nbdime \
-    nbdev
+    transformers \
+    torch \
+    ipython \
+    Pillow \
+    nbdev \
+    openpyxl
+
 
 # Copy requirements.txt and install Python libraries
 COPY requirements.txt /app/
