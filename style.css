@@ -1,0 +1,74 @@
+/* css style file for app.py UI */
+
+/* body styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Header styles */
+header {
+    background-color: #2E3B55;
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Footer styles */
+.footer {
+    background-color: #2E3B55;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 0.9em;
+}
+
+/* Titles and headings */
+h1, h2, h3 {
+    color: #0E1117;
+}
+
+/* Streamlit-specific classes for buttons, text inputs, etc. */
+.stButton > button {
+    color: white;
+    background-color: #2E3B55;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.stTextInput > div > div > input {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Custom styles for data tables and visualizations */
+.stDataFrame {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Tabs customization */
+.stTabs > div > div > button {
+    background-color: #2E3B55;
+    color: white;
+    border-radius: 5px;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+    body {
+        padding: 0 5px;
+    }
+
+    .footer {
+        font-size: 0.8em;
+    }
+}
