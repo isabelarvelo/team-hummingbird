@@ -8,11 +8,9 @@ import getpass
 import os
 from openai import OpenAI
 import overview as overview_app
+from streamlit_option_menu import option_menu
 
 
-
-os.environ["OPENAI_API_KEY"] = getpass.getpass("OpenAI API Key:")
-client = OpenAI()
 
 # set page configuration
 st.set_page_config(page_title="ReTeach: AI-Assisted Coding", page_icon="🌟", layout="wide")
@@ -32,24 +30,16 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# main function for the streamlit app
-def main():
 
-    tab1, tab2, tab3, tab4 = st.tabs(["Overview", "AI-Assisted Labeling", "Ask About the Dataset", "Interactive AI-Assisted Labeling"])
-
-    # opening page is overview page
-    with tab1:
-        overview_app.main()
-
-    with tab2:
-        AI_LABELING.main()
-
-    with tab3:
-        ASK_THE_DATASET.main()
-
-    with tab4:
-        newest_app.main()
-
-# Run the main function
-if __name__ == "__main__":
-    main()
+# Sidebar navigation
+with st.sidebar:
+    selected = option_menu("Main Menu",["Overview", "AI-Assisted Labeling", "Ask About the Dataset", "Interactive AI-Assisted Labeling"], menu_icon="cast", default_index=0)
+    
+if selected=="Overview":
+    overview_app.main()
+elif selected=="AI-Assisted Labeling":
+    AI_LABELING.main()
+elif selected=="Ask About the Dataset":
+    ASK_THE_DATASET.main()
+elif selected=="Interactive AI-Assisted Labeling":
+    newest_app.main()
