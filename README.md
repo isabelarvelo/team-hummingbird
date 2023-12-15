@@ -142,7 +142,7 @@ To run the Streamlit app:
 
 1.  Ensure Docker is installed
 2.  Open this repository in a dev container
-3.  Run streamlit run Home.py
+3.  Run streamlit run app.py
 
 Note: For several functionalities, OpenAI API keys are required. Have
 your open AI key prepared.
