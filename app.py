@@ -7,6 +7,7 @@ import AI_LABELING
 import getpass
 import os
 from openai import OpenAI
+import overview as overview_app
 
 
 
@@ -34,16 +35,19 @@ st.markdown("""
 # main function for the streamlit app
 def main():
 
-    tab1, tab2, tab3 = st.tabs(["AI-Assisted Labeling", "Ask About the Dataset", "Interactive AI-Assisted Labeling"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Overview", "AI-Assisted Labeling", "Ask About the Dataset", "Interactive AI-Assisted Labeling"])
 
-    # calling the main function from ai_assisted_labeling module, to be in tab 1
+    # opening page is overview page
     with tab1:
-        AI_LABELING.main()
+        overview_app.main()
 
     with tab2:
-        ASK_THE_DATASET.main()
+        AI_LABELING.main()
 
     with tab3:
+        ASK_THE_DATASET.main()
+
+    with tab4:
         newest_app.main()
 
 # Run the main function
