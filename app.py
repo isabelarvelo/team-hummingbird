@@ -1,5 +1,4 @@
 # incorporates all app.py sections into one cohesive app.py file
-
 import streamlit as st
 import newest_app
 import ASK_THE_DATASET
@@ -43,3 +42,5 @@ elif selected=="Ask About the Dataset":
     ASK_THE_DATASET.main()
 elif selected=="Interactive AI-Assisted Labeling":
     newest_app.main()
+
+
