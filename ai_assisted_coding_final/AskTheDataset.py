@@ -13,7 +13,7 @@ import gradio as gr
 from io import StringIO
 import sys
 
-# %% ../nbs/02_ask-the-dataset.ipynb 5
+# %% ../nbs/02_ask-the-dataset.ipynb 4
 class CSVFileManager:
     """This class is responsible for handling CSV file operations. 
     It can read one or more CSV files, either from file paths or file-like objects, and concatenate them into a single pandas DataFrame.
