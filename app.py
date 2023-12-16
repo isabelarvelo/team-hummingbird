@@ -1,6 +1,7 @@
 # incorporates all app.py sections into one cohesive app.py file
+
 import streamlit as st
-import newest_app
+import final_app
 import ASK_THE_DATASET
 import AI_LABELING
 import getpass
@@ -19,7 +20,7 @@ def local_css(file_name):
     with open(file_name, "r") as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Apply CSS
+# apply CSS
 local_css("style.css")
 
 # custom header
@@ -30,7 +31,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-# Sidebar navigation
+# sidebar navigation
 with st.sidebar:
     selected = option_menu("Main Menu",["Overview", "AI-Assisted Labeling", "Ask About the Dataset", "Interactive AI-Assisted Labeling"], menu_icon="cast", default_index=0)
     
@@ -41,6 +42,6 @@ elif selected=="AI-Assisted Labeling":
 elif selected=="Ask About the Dataset":
     ASK_THE_DATASET.main()
 elif selected=="Interactive AI-Assisted Labeling":
-    newest_app.main()
+    final_app.main()
 
 
