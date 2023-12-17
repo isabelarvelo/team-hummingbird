@@ -38,14 +38,34 @@ def submit_initial_labels():
         st.session_state['context'] = []  # Clear context after submission
         st.success('Initial Labels submitted successfully!')
         st.session_state['initial_labels_submitted'] = True
-        st.session_state['new_batch'] = True
-        print(formatted_context)
+
+        # Directly call display_predictions_st to generate predictions for the next batch
+        start_index = st.session_state['index']
+        end_index = min(start_index + INITIAL_BATCH_SIZE, len(st.session_state['data']))
+        batch_texts = st.session_state['data']['Text'].iloc[start_index:end_index].tolist()
+        if batch_texts:
+            st.session_state['predictions'] = display_predictions_st(batch_texts, st.session_state['assistant_manager'], formatted_context, start_index, labeled_data=None)
+            st.session_state['index'] = end_index
+            st.session_state['new_batch'] = False
 
 
 # updating batch size based on accuracy - for first round, increase by 5 if accuracy above 80%
 # for second round, increase by 5 if accuracy above 90%
 # for third round (and all rounds after) increase by 5 if accuracy is 100%
+# def adjust_batch_size(accuracy_scores, current_batch_size):
+#     cumulative_accuracy = sum(accuracy_scores) / len(accuracy_scores)
+#     thresholds = {1: 0.8, 2: 0.9}
+#     batch_sizes = {1: 10, 2: 15}
+#
+#     for threshold_batch, accuracy_threshold in thresholds.items():
+#         if len(accuracy_scores) == threshold_batch and cumulative_accuracy > accuracy_threshold:
+#             return batch_sizes[threshold_batch]
+#     return current_batch_size
+
 def adjust_batch_size(accuracy_scores, current_batch_size):
+    if not accuracy_scores:  # Check if the list is empty
+        return current_batch_size  # Return the current batch size if there are no accuracy scores
+
     cumulative_accuracy = sum(accuracy_scores) / len(accuracy_scores)
     thresholds = {1: 0.8, 2: 0.9}
     batch_sizes = {1: 10, 2: 15}
@@ -54,6 +74,7 @@ def adjust_batch_size(accuracy_scores, current_batch_size):
         if len(accuracy_scores) == threshold_batch and cumulative_accuracy > accuracy_threshold:
             return batch_sizes[threshold_batch]
     return current_batch_size
+
 
 # updated context for labeling (for assistant)
 def update_context_with_labels(context_items):
@@ -79,42 +100,34 @@ def process_user_inputs_and_prepare_next_batch(batch_texts, predictions, context
 def display_predictions():
     st.markdown("<h3 style='font-weight: bold;'>Predictions:</h3>", unsafe_allow_html=True)
     if 'predictions' in st.session_state:
-        # Temporary storage for edited labels
-        edited_labels = {}
-
-        for i, (text, prediction) in enumerate(list(st.session_state['predictions'])):
+        for i, (text, prediction) in enumerate(st.session_state['predictions']):
             st.write(f"Text: {text}")
-
-            # Unique key for the dropdown to select a new label
-            new_label_key = f"new_label_{i}"
+            key_suffix = f"{st.session_state['prediction_session_id']}_{i}_{hashlib.md5(text.encode()).hexdigest()[:8]}"
+            new_label_key = f"new_label_{key_suffix}"
             current_label = st.session_state.get(new_label_key, prediction)
-
-            # Dropdown to select a new label
             edited_label = st.selectbox("Choose a new label", ["OTR", "PRS", "REP", "NEU"], key=new_label_key, index=["OTR", "PRS", "REP", "NEU"].index(current_label))
-            edited_labels[new_label_key] = edited_label
-
-            st.write("---")  # Separator for readability
+            st.session_state['predictions'][i] = (text, edited_label)
+            st.write("---")
 
         # Global Save Changes button
-        if st.button("Save Changes"):
-            # Update the predictions with the edited labels
-            for i, (text, _) in enumerate(st.session_state['predictions']):
-                new_label_key = f"new_label_{i}"
-                if new_label_key in edited_labels:
-                    st.session_state['predictions'][i] = (text, edited_labels[new_label_key])
-            st.success("Changes saved successfully!")
+        # if st.button("Save Changes"):
+        #     # Update the predictions with the edited labels
+        #     for i, (text, _) in enumerate(st.session_state['predictions']):
+        #         new_label_key = f"new_label_{i}"
+        #         if new_label_key in edited_labels:
+        #             st.session_state['predictions'][i] = (text, edited_labels[new_label_key])
+        #     st.success("Changes saved successfully!")
 
 
 def display_predictions_st(batch_texts, assistant_manager, context, batch_index, labeled_data):
-    if 'predictions' not in st.session_state or st.session_state['new_batch']:
-        updated_context = context
+    updated_context = context
 
-        if labeled_data is not None:
-            for text, label in labeled_data:
-                updated_context += f"\nuser: '{text}'\nassistant: '{label}'"
+    if labeled_data is not None:
+        for text, label in labeled_data:
+            updated_context += f"\nuser: '{text}'\nassistant: '{label}'"
 
-        predictions = process_lines(batch_texts, assistant_manager, updated_context)
-        st.session_state['predictions'] = predictions
+    predictions = process_lines(batch_texts, assistant_manager, updated_context)
+    st.session_state['predictions'] = predictions
     return st.session_state['predictions']
 
 
@@ -147,6 +160,12 @@ def initialize_session_state():
 
     if 'new_batch' not in st.session_state:
         st.session_state['new_batch'] = True
+
+    if 'prediction_session_id' not in st.session_state:
+        st.session_state['prediction_session_id'] = 0
+
+    if 'widget_counter' not in st.session_state:
+        st.session_state['widget_counter'] = 0
 
 def process_lines(lines, assistant_manager, context=""):
 
@@ -201,6 +220,41 @@ def display_labeling_interface():
                 st.session_state['index'] += 1
                 break
 
+# updated function to enable user to continue labeling after first batch of predictions
+def save_and_continue_labeling():
+    # Ensure start_index and end_index are integers
+    start_index = int(st.session_state['index'])
+    end_index = int(min(start_index + int(st.session_state['batch_size']), len(st.session_state['data'])))
+
+    # Process submitted labels and update context
+    if 'predictions' in st.session_state:
+        labeled_data = [(text, label) for text, label in st.session_state['predictions']]
+        updated_context = update_context_with_labels(labeled_data)
+        st.session_state['formatted_context'] = updated_context
+        st.session_state['all_labeled_data'].extend(labeled_data)
+
+        # Calculate accuracy and update batch size
+        total_predictions = len(st.session_state['predictions'])
+        correct_predictions = sum(1 for (text, prediction), user_label in zip(st.session_state['predictions'], labeled_data) if prediction == user_label[1])
+        accuracy = correct_predictions / total_predictions if total_predictions else 0
+        new_batch_size = adjust_batch_size(st.session_state['accuracy_scores'], accuracy)
+        st.session_state['batch_size'] = new_batch_size
+        st.write(f"Updated batch size for next iteration: {new_batch_size}")
+        st.session_state['accuracy_scores'].append(accuracy)
+
+    # Generate predictions for the next batch
+    if start_index < len(st.session_state['data']):
+        batch_texts = st.session_state['data']['Text'].iloc[start_index:end_index].tolist()
+        if batch_texts:
+            predictions = display_predictions_st(batch_texts, st.session_state['assistant_manager'], updated_context, start_index, labeled_data=None)
+            st.session_state['predictions'] = predictions
+            st.session_state['index'] = end_index
+        else:
+            st.write("No more texts to process.")
+    else:
+        st.write("All sentences labeled!")
+
+
 # processing submitted labels, returns accuracy of predictions, updates batch size, and updates accuracy score
 def process_submitted_labels():
     if st.button("Submit New Labels", key='submit_new_labels_button'):
@@ -235,6 +289,28 @@ def process_submitted_labels():
         # Move to the next batch
         st.session_state['index'] += st.session_state['batch_size']
 
+# def process_batch_predictions():
+#     print("processing batch predictions")
+#
+#     if st.session_state.get('initial_labels_submitted', False) and st.session_state.get('new_batch', True):
+#         total_data = len(st.session_state['data'])
+#         start_index = st.session_state['index']
+#         end_index = start_index + st.session_state['batch_size']
+#
+#         if start_index < total_data:
+#             batch_texts = st.session_state['data']['Text'].iloc[start_index:end_index].tolist()
+#             st.session_state['batch_texts'] = batch_texts
+#
+#             if batch_texts:
+#                 predictions = display_predictions_st(batch_texts, st.session_state['assistant_manager'], st.session_state['formatted_context'], start_index, labeled_data=None)
+#                 st.session_state['predictions'] = predictions
+#                 st.session_state['index'] += st.session_state['batch_size']
+#                 st.session_state['new_batch'] = False
+#             else:
+#                 print("No batch texts to process")
+#         else:
+#             st.write("All sentences labeled!")
+
 def process_batch_predictions():
     print("processing batch predictions")
 
@@ -254,8 +330,10 @@ def process_batch_predictions():
                 st.session_state['new_batch'] = False
             else:
                 print("No batch texts to process")
+                st.session_state['new_batch'] = False  # Ensure this is set to False to avoid loop
         else:
             st.write("All sentences labeled!")
+            st.session_state['initial_labels_submitted'] = False  # Reset this to handle new data if needed
 
 
 
@@ -332,10 +410,10 @@ def display_and_edit_labeled_sentences():
     else:
         st.write("No labeled sentences to display.")
 
+
 def main():
     initialize_session_state()
     st.title("Interactive AI-Assisted Labeling")
-
     initialize_assistant()
 
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key="csv_file_uploader")
@@ -351,9 +429,14 @@ def main():
     if not st.session_state.get('initial_labels_submitted', False):
         submit_initial_labels()
 
-    if st.session_state.get('initial_labels_submitted', False):
-        process_batch_predictions()
+    # Display predictions if initial labels are submitted and it's not a new batch
+    if st.session_state.get('initial_labels_submitted', False) and not st.session_state.get('new_batch', False):
         display_predictions()
+
+    # 'Save and Continue Labeling' button
+    if st.session_state.get('initial_labels_submitted', False) and st.button("Save and Continue Labeling", key='save_continue_labeling_button'):
+        save_and_continue_labeling()
+        display_predictions()  # Display the new predictions after updating
 
     export_labeled_data()
     export_accuracy_and_batch_sizes()
